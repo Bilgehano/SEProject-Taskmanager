@@ -166,3 +166,20 @@ button:focus-visible {
   border-radius: 10px;
   background: #f8fafc;
 }
+
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.secondary {
+  background: #ffffff;
+  color: #1d4ed8;
+  border-color: #cbd5e1;
+}
+
+.secondary:hover {
+  background: #f8fafc;
+  color: #1d4ed8;
+}

@@ -51,12 +51,14 @@ const descriptionInput = document.querySelector<HTMLTextAreaElement>('#descripti
 const dueDateInput = document.querySelector<HTMLInputElement>('#dueDate')
 const errorEl = document.querySelector<HTMLSpanElement>('#error')
 const taskListEl = document.querySelector<HTMLUListElement>('#task-list')
+const submitButton = document.querySelector<HTMLButtonElement>('#task-form button[type="submit"]')
 
 if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
   throw new Error('Task form failed to initialize')
 }
 
 const tasks: Task[] = loadTasks()
+let editingTaskId: string | null = null
 renderTasks(taskListEl, tasks)
 
 form.addEventListener('submit', (event) => {
@@ -71,21 +73,37 @@ form.addEventListener('submit', (event) => {
     return
   }
 
-  const newTask: Task = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
-    title,
-    description,
-    dueDate,
-    createdAt: new Date().toISOString(),
+  if (editingTaskId) {
+    const targetIndex = tasks.findIndex((task) => task.id === editingTaskId)
+
+    if (targetIndex === -1) {
+      setError('Unable to update task')
+      resetFormState()
+      return
+    }
+
+    tasks[targetIndex] = {
+      ...tasks[targetIndex],
+      title,
+      description,
+      dueDate,
+    }
+  } else {
+    const newTask: Task = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
+      title,
+      description,
+      dueDate,
+      createdAt: new Date().toISOString(),
+    }
+
+    tasks.push(newTask)
   }
 
-  tasks.push(newTask)
   saveTasks(tasks)
   renderTasks(taskListEl, tasks)
 
-  form.reset()
-  setError('')
-  titleInput.focus()
+  resetFormState()
 })
 
 function setError(message: string) {
@@ -112,6 +130,29 @@ function saveTasks(nextTasks: Task[]) {
   } catch (error) {
     console.error('Failed to save tasks to LocalStorage', error)
   }
+}
+
+function startEdit(task: Task) {
+  editingTaskId = task.id
+  titleInput!.value = task.title
+  descriptionInput!.value = task.description
+  dueDateInput!.value = task.dueDate
+  setError('')
+  setSubmitLabel('Save Changes')
+  titleInput!.focus()
+}
+
+function resetFormState() {
+  editingTaskId = null
+  form!.reset()
+  setSubmitLabel('Add Task')
+  setError('')
+  titleInput!.focus()
+}
+
+function setSubmitLabel(label: string) {
+  if (!submitButton) return
+  submitButton.textContent = label
 }
 
 function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
@@ -150,7 +191,18 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     meta.className = 'task-meta'
     meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
 
-    item.append(header, desc, meta)
+    const actions = document.createElement('div')
+    actions.className = 'task-actions'
+
+    const editButton = document.createElement('button')
+    editButton.type = 'button'
+    editButton.className = 'secondary'
+    editButton.textContent = 'Edit'
+    editButton.addEventListener('click', () => startEdit(task))
+
+    actions.append(editButton)
+
+    item.append(header, desc, meta, actions)
     listEl.appendChild(item)
   })
 }
