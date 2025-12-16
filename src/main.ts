@@ -51,46 +51,112 @@ const descriptionInput = document.querySelector<HTMLTextAreaElement>('#descripti
 const dueDateInput = document.querySelector<HTMLInputElement>('#dueDate')
 const errorEl = document.querySelector<HTMLSpanElement>('#error')
 const taskListEl = document.querySelector<HTMLUListElement>('#task-list')
+const submitButton = document.querySelector<HTMLButtonElement>('button[type="submit"]')
 
-if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
+if (!form) {
   throw new Error('Task form failed to initialize')
 }
 
-const tasks: Task[] = loadTasks()
-renderTasks(taskListEl, tasks)
+if (!titleInput) {
+  throw new Error('Title input missing')
+}
 
-form.addEventListener('submit', (event) => {
+if (!descriptionInput) {
+  throw new Error('Description input missing')
+}
+
+if (!dueDateInput) {
+  throw new Error('Due date input missing')
+}
+
+if (!taskListEl) {
+  throw new Error('Task list missing')
+}
+
+if (!submitButton) {
+  throw new Error('Submit button missing')
+}
+
+const taskForm = form as HTMLFormElement
+const taskTitleInput = titleInput as HTMLInputElement
+const taskDescriptionInput = descriptionInput as HTMLTextAreaElement
+const taskDueDateInput = dueDateInput as HTMLInputElement
+const taskList = taskListEl as HTMLUListElement
+const taskSubmitButton = submitButton as HTMLButtonElement
+
+const tasks: Task[] = loadTasks()
+renderTasks(taskList, tasks)
+
+let editingTaskId: string | null = null
+
+taskForm.addEventListener('submit', (event) => {
   event.preventDefault()
 
-  const title = titleInput.value.trim()
-  const description = descriptionInput.value.trim()
-  const dueDate = dueDateInput.value
+  const title = taskTitleInput.value.trim()
+  const description = taskDescriptionInput.value.trim()
+  const dueDate = taskDueDateInput.value
 
   if (!title || !dueDate) {
     setError('Title and due date are required')
     return
   }
 
-  const newTask: Task = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
-    title,
-    description,
-    dueDate,
-    createdAt: new Date().toISOString(),
+  if (editingTaskId) {
+    const taskIndex = tasks.findIndex((task) => task.id === editingTaskId)
+    if (taskIndex === -1) {
+      setError('Unable to locate task to edit')
+      resetFormState()
+      return
+    }
+
+    tasks[taskIndex] = {
+      ...tasks[taskIndex],
+      title,
+      description,
+      dueDate,
+    }
+  } else {
+    const newTask: Task = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
+      title,
+      description,
+      dueDate,
+      createdAt: new Date().toISOString(),
+    }
+
+    tasks.push(newTask)
   }
 
-  tasks.push(newTask)
   saveTasks(tasks)
-  renderTasks(taskListEl, tasks)
-
-  form.reset()
-  setError('')
-  titleInput.focus()
+  renderTasks(taskList, tasks)
+  resetFormState()
 })
 
 function setError(message: string) {
   if (!errorEl) return
   errorEl.textContent = message
+}
+
+function setSubmitLabel(label: string) {
+  taskSubmitButton.textContent = label
+}
+
+function resetFormState() {
+  taskForm.reset()
+  editingTaskId = null
+  setSubmitLabel('Add Task')
+  setError('')
+  taskTitleInput.focus()
+}
+
+function startEditTask(task: Task) {
+  editingTaskId = task.id
+  taskTitleInput.value = task.title
+  taskDescriptionInput.value = task.description
+  taskDueDateInput.value = task.dueDate
+  setSubmitLabel('Save Task')
+  setError('')
+  taskTitleInput.focus()
 }
 
 function loadTasks(): Task[] {
@@ -150,7 +216,17 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     meta.className = 'task-meta'
     meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
 
-    item.append(header, desc, meta)
+    const actions = document.createElement('div')
+    actions.className = 'task-actions'
+
+    const editButton = document.createElement('button')
+    editButton.type = 'button'
+    editButton.textContent = 'Edit'
+    editButton.addEventListener('click', () => startEditTask(task))
+
+    actions.append(editButton)
+
+    item.append(header, desc, meta, actions)
     listEl.appendChild(item)
   })
 }

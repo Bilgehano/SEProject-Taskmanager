@@ -158,6 +158,17 @@ button:focus-visible {
   color: #667085;
 }
 
+.task-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-actions button {
+  padding: 0.4em 0.9em;
+  font-size: 0.9em;
+}
+
 .empty {
   color: #98a2b3;
   text-align: center;
