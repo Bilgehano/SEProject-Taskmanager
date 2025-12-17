@@ -33,7 +33,8 @@ app.innerHTML = `
         <input id="dueDate" name="dueDate" type="date" required />
       </div>
       <div class="actions">
-        <button type="submit">Add Task</button>
+        <button type="submit" id="submit-btn">Add Task</button>
+        <button type="button" id="cancel-btn" style="display: none;">Cancel</button>
         <span id="error" class="error" role="status" aria-live="polite"></span>
       </div>
     </form>
@@ -51,10 +52,14 @@ const descriptionInput = document.querySelector<HTMLTextAreaElement>('#descripti
 const dueDateInput = document.querySelector<HTMLInputElement>('#dueDate')
 const errorEl = document.querySelector<HTMLSpanElement>('#error')
 const taskListEl = document.querySelector<HTMLUListElement>('#task-list')
+const submitBtn = document.querySelector<HTMLButtonElement>('#submit-btn')
+const cancelBtn = document.querySelector<HTMLButtonElement>('#cancel-btn')
 
-if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
+if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl || !submitBtn || !cancelBtn) {
   throw new Error('Task form failed to initialize')
 }
+
+let editingTaskId: string | null = null
 
 const tasks: Task[] = loadTasks()
 renderTasks(taskListEl, tasks)
@@ -71,15 +76,25 @@ form.addEventListener('submit', (event) => {
     return
   }
 
-  const newTask: Task = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
-    title,
-    description,
-    dueDate,
-    createdAt: new Date().toISOString(),
+  if (editingTaskId) {
+    const taskIndex = tasks.findIndex((t) => t.id === editingTaskId)
+    if (taskIndex !== -1) {
+      tasks[taskIndex].title = title
+      tasks[taskIndex].description = description
+      tasks[taskIndex].dueDate = dueDate
+    }
+    clearEditState()
+  } else {
+    const newTask: Task = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
+      title,
+      description,
+      dueDate,
+      createdAt: new Date().toISOString(),
+    }
+    tasks.push(newTask)
   }
 
-  tasks.push(newTask)
   saveTasks(tasks)
   renderTasks(taskListEl, tasks)
 
@@ -87,6 +102,30 @@ form.addEventListener('submit', (event) => {
   setError('')
   titleInput.focus()
 })
+
+cancelBtn.addEventListener('click', () => {
+  clearEditState()
+  form.reset()
+  setError('')
+  titleInput.focus()
+})
+
+function clearEditState() {
+  editingTaskId = null
+  if (submitBtn) submitBtn.textContent = 'Add Task'
+  if (cancelBtn) cancelBtn.style.display = 'none'
+}
+
+function startEdit(task: Task) {
+  editingTaskId = task.id
+  if (titleInput) titleInput.value = task.title
+  if (descriptionInput) descriptionInput.value = task.description
+  if (dueDateInput) dueDateInput.value = task.dueDate
+  if (submitBtn) submitBtn.textContent = 'Save Changes'
+  if (cancelBtn) cancelBtn.style.display = 'inline-block'
+  setError('')
+  if (titleInput) titleInput.focus()
+}
 
 function setError(message: string) {
   if (!errorEl) return
@@ -150,7 +189,17 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     meta.className = 'task-meta'
     meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
 
-    item.append(header, desc, meta)
+    const actions = document.createElement('div')
+    actions.className = 'task-actions'
+
+    const editBtn = document.createElement('button')
+    editBtn.className = 'edit-btn'
+    editBtn.textContent = 'Edit'
+    editBtn.addEventListener('click', () => startEdit(task))
+
+    actions.appendChild(editBtn)
+
+    item.append(header, desc, meta, actions)
     listEl.appendChild(item)
   })
 }
