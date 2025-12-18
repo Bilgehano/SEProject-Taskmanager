@@ -33,7 +33,8 @@ app.innerHTML = `
         <input id="dueDate" name="dueDate" type="date" required />
       </div>
       <div class="actions">
-        <button type="submit">Add Task</button>
+        <button type="submit" id="submit-button">Add Task</button>
+        <button type="button" id="cancel-edit" class="ghost-button" hidden>Cancel edit</button>
         <span id="error" class="error" role="status" aria-live="polite"></span>
       </div>
     </form>
@@ -45,19 +46,29 @@ app.innerHTML = `
   </main>
 `
 
-const form = document.querySelector<HTMLFormElement>('#task-form')
-const titleInput = document.querySelector<HTMLInputElement>('#title')
-const descriptionInput = document.querySelector<HTMLTextAreaElement>('#description')
-const dueDateInput = document.querySelector<HTMLInputElement>('#dueDate')
-const errorEl = document.querySelector<HTMLSpanElement>('#error')
-const taskListEl = document.querySelector<HTMLUListElement>('#task-list')
-
-if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
-  throw new Error('Task form failed to initialize')
+function requireElement<T extends Element>(element: T | null, message: string): T {
+  if (!element) {
+    throw new Error(message)
+  }
+  return element
 }
+
+const form = requireElement(document.querySelector<HTMLFormElement>('#task-form'), 'Task form failed to initialize')
+const titleInput = requireElement(document.querySelector<HTMLInputElement>('#title'), 'Title input missing')
+const descriptionInput = requireElement(
+  document.querySelector<HTMLTextAreaElement>('#description'),
+  'Description input missing',
+)
+const dueDateInput = requireElement(document.querySelector<HTMLInputElement>('#dueDate'), 'Due date input missing')
+const submitButton = requireElement(document.querySelector<HTMLButtonElement>('#submit-button'), 'Submit button missing')
+const cancelEditButton = requireElement(document.querySelector<HTMLButtonElement>('#cancel-edit'), 'Cancel button missing')
+const errorEl = document.querySelector<HTMLSpanElement>('#error')
+const taskListEl = requireElement(document.querySelector<HTMLUListElement>('#task-list'), 'Task list missing')
 
 const tasks: Task[] = loadTasks()
 renderTasks(taskListEl, tasks)
+
+let editingTaskId: string | null = null
 
 form.addEventListener('submit', (event) => {
   event.preventDefault()
@@ -71,19 +82,30 @@ form.addEventListener('submit', (event) => {
     return
   }
 
-  const newTask: Task = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
-    title,
-    description,
-    dueDate,
-    createdAt: new Date().toISOString(),
+  const updates = { title, description, dueDate }
+
+  if (editingTaskId) {
+    const index = tasks.findIndex((task) => task.id === editingTaskId)
+    if (index === -1) {
+      console.warn('Editing target task was not found; creating a new task instead')
+      tasks.push(createTask(updates))
+    } else {
+      tasks[index] = { ...tasks[index], ...updates }
+    }
+  } else {
+    tasks.push(createTask(updates))
   }
 
-  tasks.push(newTask)
   saveTasks(tasks)
   renderTasks(taskListEl, tasks)
 
-  form.reset()
+  resetFormState()
+  setError('')
+  titleInput.focus()
+})
+
+cancelEditButton.addEventListener('click', () => {
+  resetFormState()
   setError('')
   titleInput.focus()
 })
@@ -112,6 +134,35 @@ function saveTasks(nextTasks: Task[]) {
   } catch (error) {
     console.error('Failed to save tasks to LocalStorage', error)
   }
+}
+
+function createTask({ title, description, dueDate }: Pick<Task, 'title' | 'description' | 'dueDate'>): Task {
+  return {
+    id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
+    title,
+    description,
+    dueDate,
+    createdAt: new Date().toISOString(),
+  }
+}
+
+function enterEditMode(task: Task) {
+  editingTaskId = task.id
+  titleInput.value = task.title
+  descriptionInput.value = task.description || ''
+  dueDateInput.value = task.dueDate
+  submitButton.textContent = 'Save Changes'
+  cancelEditButton.hidden = false
+  cancelEditButton.disabled = false
+  titleInput.focus()
+  setError('')
+}
+
+function resetFormState() {
+  form.reset()
+  editingTaskId = null
+  submitButton.textContent = 'Add Task'
+  cancelEditButton.hidden = true
 }
 
 function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
@@ -150,7 +201,18 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     meta.className = 'task-meta'
     meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
 
-    item.append(header, desc, meta)
+    const actions = document.createElement('div')
+    actions.className = 'task-actions'
+
+    const editButton = document.createElement('button')
+    editButton.type = 'button'
+    editButton.className = 'link-button'
+    editButton.textContent = 'Edit'
+    editButton.addEventListener('click', () => enterEditMode(task))
+
+    actions.append(editButton)
+
+    item.append(header, desc, meta, actions)
     listEl.appendChild(item)
   })
 }

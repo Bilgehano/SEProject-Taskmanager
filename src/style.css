@@ -111,6 +111,34 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+button.ghost-button {
+  background: transparent;
+  border-color: transparent;
+  color: #1d4ed8;
+  box-shadow: none;
+  padding: 0.6em 0.8em;
+}
+
+button.ghost-button:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+button.link-button {
+  background: transparent;
+  color: #1d4ed8;
+  border: none;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+button.link-button:hover {
+  transform: none;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
 .error {
   color: #b42318;
   font-size: 0.95rem;
@@ -156,6 +184,12 @@ button:focus-visible {
 
 .task-meta {
   color: #667085;
+}
+
+.task-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .empty {
