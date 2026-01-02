@@ -56,8 +56,29 @@ if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
   throw new Error('Task form failed to initialize')
 }
 
+
+let editingTaskId: string | null = null;
 const tasks: Task[] = loadTasks()
 renderTasks(taskListEl, tasks)
+
+taskListEl.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement;
+  if (target.classList.contains('edit-task-btn')) {
+    const taskId = target.getAttribute('data-task-id');
+    if (!taskId) return;
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    editingTaskId = task.id;
+    titleInput.value = task.title;
+    descriptionInput.value = task.description;
+    dueDateInput.value = task.dueDate;
+    setError('');
+    // Change submit button text to indicate editing
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Save Changes';
+    titleInput.focus();
+  }
+});
 
 form.addEventListener('submit', (event) => {
   event.preventDefault()
@@ -71,6 +92,32 @@ form.addEventListener('submit', (event) => {
     return
   }
 
+  if (editingTaskId) {
+    // Editing existing task
+    const idx = tasks.findIndex(t => t.id === editingTaskId)
+    if (idx === -1) {
+      setError('Task not found')
+      return
+    }
+    // Only update fields, do not change id or createdAt
+    tasks[idx] = {
+      ...tasks[idx],
+      title,
+      description,
+      dueDate
+    }
+    saveTasks(tasks)
+    renderTasks(taskListEl, tasks)
+    editingTaskId = null
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Add Task';
+    form.reset()
+    setError('')
+    titleInput.focus()
+    return
+  }
+
+  // Add new task
   const newTask: Task = {
     id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
     title,
@@ -78,11 +125,9 @@ form.addEventListener('submit', (event) => {
     dueDate,
     createdAt: new Date().toISOString(),
   }
-
   tasks.push(newTask)
   saveTasks(tasks)
   renderTasks(taskListEl, tasks)
-
   form.reset()
   setError('')
   titleInput.focus()
@@ -140,7 +185,14 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     date.className = 'task-date'
     date.textContent = `Due ${task.dueDate}`
 
-    header.append(title, date)
+    // Edit button
+    const editBtn = document.createElement('button')
+    editBtn.className = 'edit-task-btn'
+    editBtn.textContent = 'Edit'
+    editBtn.setAttribute('type', 'button')
+    editBtn.setAttribute('data-task-id', task.id)
+
+    header.append(title, date, editBtn)
 
     const desc = document.createElement('p')
     desc.className = 'task-desc'

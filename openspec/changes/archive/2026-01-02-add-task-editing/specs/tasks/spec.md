@@ -1,25 +1,4 @@
-# tasks Specification
-
-## Purpose
-TBD - created by archiving change add-task-creation. Update Purpose after archive.
-## Requirements
-### Requirement: Task Creation
-The system SHALL let users create a task with a title, description, and due date.
-
-#### Scenario: Create task successfully
-- **WHEN** the user enters a title and due date (description optional) and submits the form
-- **THEN** the task is saved with its title, description, due date, and creation timestamp
-- **AND** the new task appears in the task list without requiring a page reload
-
-#### Scenario: Persist tasks to LocalStorage
-- **WHEN** a task is saved
-- **THEN** it is stored in LocalStorage using a stable key
-- **AND** the saved task remains available after a browser refresh
-
-#### Scenario: Required fields validated
-- **WHEN** the user submits without a title or due date
-- **THEN** the task is not saved
-- **AND** the user is informed that required fields are missing
+## MODIFIED Requirements
 
 ### Requirement: Task Editing
 The system SHALL let users edit an existing task's title, description, and due date.
@@ -42,4 +21,3 @@ The system SHALL let users edit an existing task's title, description, and due d
 - **WHEN** editing a task
 - **THEN** no new task is created
 - **AND** no new fields are added to the data model
-
