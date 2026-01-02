@@ -1,8 +1,4 @@
-# tasks Specification
-
-## Purpose
-TBD - created by archiving change add-task-creation. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
 ### Requirement: Task Creation
 The system SHALL let users create a task with a title, description, and due date.
 The system SHALL let users edit the title, description, and due date of an existing task.
@@ -30,4 +26,3 @@ The system SHALL let users edit the title, description, and due date of an exist
 #### Scenario: Initialize from saved tasks
 - **WHEN** the app loads and LocalStorage already has saved tasks
 - **THEN** those tasks populate the on-page task list
-

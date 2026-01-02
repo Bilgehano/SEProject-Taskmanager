@@ -57,6 +57,9 @@ if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
 }
 
 const tasks: Task[] = loadTasks()
+
+let editingTaskId: string | null = null
+let editError = ''
 renderTasks(taskListEl, tasks)
 
 form.addEventListener('submit', (event) => {
@@ -129,28 +132,133 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
     const item = document.createElement('li')
     item.className = 'task-item'
 
-    const header = document.createElement('div')
-    header.className = 'task-header'
+    if (editingTaskId === task.id) {
+      // Edit form
+      const form = document.createElement('form')
+      form.className = 'task-form'
+      form.style.marginBottom = '0'
 
-    const title = document.createElement('span')
-    title.className = 'task-title'
-    title.textContent = task.title
+      const titleField = document.createElement('div')
+      titleField.className = 'field'
+      const titleLabel = document.createElement('label')
+      titleLabel.htmlFor = `edit-title-${task.id}`
+      titleLabel.textContent = 'Title *'
+      const titleInput = document.createElement('input')
+      titleInput.id = `edit-title-${task.id}`
+      titleInput.type = 'text'
+      titleInput.value = task.title
+      titleInput.required = true
+      titleField.append(titleLabel, titleInput)
 
-    const date = document.createElement('span')
-    date.className = 'task-date'
-    date.textContent = `Due ${task.dueDate}`
+      const descField = document.createElement('div')
+      descField.className = 'field'
+      const descLabel = document.createElement('label')
+      descLabel.htmlFor = `edit-desc-${task.id}`
+      descLabel.textContent = 'Description'
+      const descInput = document.createElement('textarea')
+      descInput.id = `edit-desc-${task.id}`
+      descInput.rows = 3
+      descInput.value = task.description
+      descField.append(descLabel, descInput)
 
-    header.append(title, date)
+      const dateField = document.createElement('div')
+      dateField.className = 'field'
+      const dateLabel = document.createElement('label')
+      dateLabel.htmlFor = `edit-date-${task.id}`
+      dateLabel.textContent = 'Due date *'
+      const dateInput = document.createElement('input')
+      dateInput.id = `edit-date-${task.id}`
+      dateInput.type = 'date'
+      dateInput.value = task.dueDate
+      dateInput.required = true
+      dateField.append(dateLabel, dateInput)
 
-    const desc = document.createElement('p')
-    desc.className = 'task-desc'
-    desc.textContent = task.description || 'No description'
+      const actions = document.createElement('div')
+      actions.className = 'actions'
+      const saveBtn = document.createElement('button')
+      saveBtn.type = 'submit'
+      saveBtn.textContent = 'Save'
+      const cancelBtn = document.createElement('button')
+      cancelBtn.type = 'button'
+      cancelBtn.textContent = 'Cancel'
+      actions.append(saveBtn, cancelBtn)
 
-    const meta = document.createElement('small')
-    meta.className = 'task-meta'
-    meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
+      const errorSpan = document.createElement('span')
+      errorSpan.className = 'error'
+      errorSpan.style.minHeight = '20px'
+      errorSpan.textContent = editError
 
-    item.append(header, desc, meta)
+      form.append(titleField, descField, dateField, actions, errorSpan)
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const newTitle = titleInput.value.trim()
+        const newDesc = descInput.value.trim()
+        const newDate = dateInput.value
+        if (!newTitle || !newDate) {
+          editError = 'Title and due date are required'
+          renderTasks(listEl, nextTasks)
+          return
+        }
+        // Update task in array
+        const idx = tasks.findIndex(t => t.id === task.id)
+        if (idx !== -1) {
+          tasks[idx] = {
+            ...tasks[idx],
+            title: newTitle,
+            description: newDesc,
+            dueDate: newDate
+          }
+          saveTasks(tasks)
+        }
+        editingTaskId = null
+        editError = ''
+        renderTasks(listEl, tasks)
+      })
+
+      cancelBtn.addEventListener('click', () => {
+        editingTaskId = null
+        editError = ''
+        renderTasks(listEl, tasks)
+      })
+
+      item.appendChild(form)
+    } else {
+      // Read-only view
+      const header = document.createElement('div')
+      header.className = 'task-header'
+
+      const title = document.createElement('span')
+      title.className = 'task-title'
+      title.textContent = task.title
+
+      const date = document.createElement('span')
+      date.className = 'task-date'
+      date.textContent = `Due ${task.dueDate}`
+
+      header.append(title, date)
+
+      const editBtn = document.createElement('button')
+      editBtn.type = 'button'
+      editBtn.textContent = 'Edit'
+      editBtn.style.marginLeft = '8px'
+      editBtn.addEventListener('click', () => {
+        editingTaskId = task.id
+        editError = ''
+        renderTasks(listEl, tasks)
+      })
+      header.append(editBtn)
+
+      const desc = document.createElement('p')
+      desc.className = 'task-desc'
+      desc.textContent = task.description || 'No description'
+
+      const meta = document.createElement('small')
+      meta.className = 'task-meta'
+      meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
+
+      item.append(header, desc, meta)
+    }
     listEl.appendChild(item)
   })
 }
