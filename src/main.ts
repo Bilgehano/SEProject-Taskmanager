@@ -6,6 +6,7 @@ type Task = {
   description: string
   dueDate: string
   createdAt: string
+  completed: boolean
 }
 
 const STORAGE_KEY = 'taskmanager.tasks'
@@ -80,6 +81,7 @@ form.addEventListener('submit', (event) => {
     description,
     dueDate,
     createdAt: new Date().toISOString(),
+    completed: false,
   }
 
   tasks.push(newTask)
@@ -102,7 +104,11 @@ function loadTasks(): Task[] {
     if (!raw) return []
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
-    return parsed as Task[]
+    // Ensure all tasks have a completed property (for backward compatibility)
+    return (parsed as Task[]).map(task => ({
+      ...task,
+      completed: typeof task.completed === 'boolean' ? task.completed : false
+    }))
   } catch (error) {
     console.warn('Failed to read tasks from LocalStorage', error)
     return []
@@ -131,6 +137,9 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
   nextTasks.forEach((task) => {
     const item = document.createElement('li')
     item.className = 'task-item'
+    if (task.completed) {
+      item.classList.add('completed')
+    }
 
     if (editingTaskId === task.id) {
       // Edit form
@@ -227,6 +236,25 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
       // Read-only view
       const header = document.createElement('div')
       header.className = 'task-header'
+
+      // Completion toggle
+      const completeToggle = document.createElement('input')
+      completeToggle.type = 'checkbox'
+      completeToggle.checked = task.completed
+      completeToggle.title = task.completed ? 'Mark as open' : 'Mark as completed'
+      completeToggle.style.marginRight = '8px'
+      completeToggle.addEventListener('change', () => {
+        const idx = tasks.findIndex(t => t.id === task.id)
+        if (idx !== -1) {
+          tasks[idx] = {
+            ...tasks[idx],
+            completed: !tasks[idx].completed
+          }
+          saveTasks(tasks)
+          renderTasks(listEl, tasks)
+        }
+      })
+      header.append(completeToggle)
 
       const title = document.createElement('span')
       title.className = 'task-title'

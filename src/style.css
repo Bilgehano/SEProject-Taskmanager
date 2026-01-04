@@ -144,6 +144,11 @@ button:focus-visible {
   font-weight: 700;
 }
 
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: #98a2b3;
+}
+
 .task-date {
   color: #475467;
   font-size: 0.95rem;
