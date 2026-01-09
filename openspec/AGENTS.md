@@ -452,5 +452,20 @@ openspec show [item]       # View details
 openspec validate --strict # Is it correct?
 openspec archive <change-id> [--yes|-y]  # Mark complete (add --yes for automation)
 ```
+## Tool Usage Rules for Testing
+
+When writing tests, the agent MUST select tools only from the following set:
+- The existing test runner (Vitest)
+- Plain JavaScript / TypeScript assertions
+- Existing project utilities
+
+The agent MUST NOT:
+- Use UI testing libraries
+- Render components or templates
+- Introduce JSX or HTML syntax
+- Modify configuration files
+- Install dependencies
+
+If a requested test requires any of the above, the agent MUST stop and report that the scope is unsupported.
 
 Remember: Specs are truth. Changes are proposals. Keep them in sync.

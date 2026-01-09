@@ -34,7 +34,26 @@ Functional React components only; no class components Descriptive camelCase for 
 
 
 ### Testing Strategy
-[Explain your testing approach and requirements]
+Automated tests in this project operate strictly at the logic and state level.
+
+### Allowed Test Scope
+- Pure functions
+- State transitions
+- Data structures
+- Persistence via existing storage APIs
+
+### Disallowed Test Scope
+- UI rendering
+- JSX or template rendering
+- Component mounting
+- Browser or DOM simulation
+
+### Tooling Constraints
+- Use the existing test framework only
+- Do NOT introduce UI testing libraries
+- Do NOT modify build, bundler, or transpilation configuration
+- Do NOT add framework-specific plugins
+
 
 ### Git Workflow
 [Describe your branching strategy and commit conventions]

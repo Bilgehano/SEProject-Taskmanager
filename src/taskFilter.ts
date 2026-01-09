@@ -10,3 +10,5 @@ export function filterTasksByCompletion(tasks: { completed: boolean }[], filter:
   }
   return tasks;
 }
+
+export { filterTasksByCompletion as filterTasks };
