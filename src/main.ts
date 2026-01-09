@@ -1,4 +1,5 @@
 import './style.css'
+import { type TaskFilterMode } from './taskFilter'
 
 type Task = {
   id: string
@@ -10,6 +11,7 @@ type Task = {
 }
 
 const STORAGE_KEY = 'taskmanager.tasks'
+const FILTER_STORAGE_KEY = 'taskmanager.filter'
 
 const app = document.querySelector<HTMLDivElement>('#app')
 
@@ -41,6 +43,14 @@ app.innerHTML = `
 
     <section>
       <h2>Tasks</h2>
+      <div class="filters">
+        <label for="task-filter">Show</label>
+        <select id="task-filter" name="task-filter">
+          <option value="all">All Tasks</option>
+          <option value="open">Open Tasks</option>
+          <option value="completed">Completed Tasks</option>
+        </select>
+      </div>
       <ul id="task-list" class="task-list"></ul>
     </section>
   </main>
@@ -51,17 +61,34 @@ const titleInput = document.querySelector<HTMLInputElement>('#title')
 const descriptionInput = document.querySelector<HTMLTextAreaElement>('#description')
 const dueDateInput = document.querySelector<HTMLInputElement>('#dueDate')
 const errorEl = document.querySelector<HTMLSpanElement>('#error')
+const filterEl = document.querySelector<HTMLSelectElement>('#task-filter')
 const taskListEl = document.querySelector<HTMLUListElement>('#task-list')
 
-if (!form || !titleInput || !descriptionInput || !dueDateInput || !taskListEl) {
+if (!form || !titleInput || !descriptionInput || !dueDateInput || !filterEl || !taskListEl) {
   throw new Error('Task form failed to initialize')
 }
 
 const tasks: Task[] = loadTasks()
 
+let taskFilter: TaskFilterMode = 'open'
+
 let editingTaskId: string | null = null
 let editError = ''
-renderTasks(taskListEl, tasks)
+render()
+
+// Load the filter state from LocalStorage
+const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY)
+if (savedFilter === 'completed' || savedFilter === 'open' || savedFilter === 'all') {
+  taskFilter = savedFilter as TaskFilterMode
+  filterEl.value = taskFilter
+}
+
+filterEl.addEventListener('change', () => {
+  const selectedFilter = filterEl.value
+  taskFilter = selectedFilter as TaskFilterMode
+  localStorage.setItem(FILTER_STORAGE_KEY, taskFilter) // Persist filter state
+  render()
+})
 
 form.addEventListener('submit', (event) => {
   event.preventDefault()
@@ -86,7 +113,7 @@ form.addEventListener('submit', (event) => {
 
   tasks.push(newTask)
   saveTasks(tasks)
-  renderTasks(taskListEl, tasks)
+  render()
 
   form.reset()
   setError('')
@@ -120,6 +147,24 @@ function saveTasks(nextTasks: Task[]) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextTasks))
   } catch (error) {
     console.error('Failed to save tasks to LocalStorage', error)
+  }
+}
+
+function filterTasksByCompletion(tasks: Task[], filter: TaskFilterMode): Task[] {
+  if (filter === 'completed') {
+    return tasks.filter(task => task.completed)
+  } else if (filter === 'open') {
+    return tasks.filter(task => !task.completed)
+  }
+  return tasks
+}
+
+function render() {
+  const visibleTasks = filterTasksByCompletion(tasks, taskFilter)
+  if (taskListEl) {
+    renderTasks(taskListEl, visibleTasks)
+  } else {
+    console.error('Task list element is missing')
   }
 }
 
@@ -206,7 +251,7 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
         const newDate = dateInput.value
         if (!newTitle || !newDate) {
           editError = 'Title and due date are required'
-          renderTasks(listEl, nextTasks)
+          render()
           return
         }
         // Update task in array
@@ -222,13 +267,13 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
         }
         editingTaskId = null
         editError = ''
-        renderTasks(listEl, tasks)
+        render()
       })
 
       cancelBtn.addEventListener('click', () => {
         editingTaskId = null
         editError = ''
-        renderTasks(listEl, tasks)
+        render()
       })
 
       item.appendChild(form)
@@ -251,7 +296,7 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
             completed: !tasks[idx].completed
           }
           saveTasks(tasks)
-          renderTasks(listEl, tasks)
+          render()
         }
       })
       header.append(completeToggle)
@@ -273,7 +318,7 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
       editBtn.addEventListener('click', () => {
         editingTaskId = task.id
         editError = ''
-        renderTasks(listEl, tasks)
+        render()
       })
       header.append(editBtn)
 

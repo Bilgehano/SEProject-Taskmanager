@@ -63,7 +63,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   font: inherit;
   padding: 10px 12px;
   border-radius: 8px;
@@ -76,9 +77,17 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: 2px solid #2563eb;
   outline-offset: 1px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
 }
 
 .actions {
