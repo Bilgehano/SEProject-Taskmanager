@@ -53,3 +53,74 @@ The system SHALL let users toggle the completed state of any existing task from 
 - **THEN** only that task's completed property is changed
 - **AND** unrelated properties and tasks are not affected
 
+### Requirement: Delete Task
+The system SHALL allow the user to delete a task from the task list. When a task is deleted, it MUST be removed from both the task list displayed to the user and the persisted storage.
+
+#### Scenario: Delete Task from List
+**Given** the user is viewing the task list,
+**When** the user clicks the "Delete" button for a task,
+**Then** the task MUST be removed from the task list in the UI,
+**And** the task MUST be removed from LocalStorage.
+
+#### Scenario: Delete Task Persistence
+**Given** the user has deleted a task,
+**When** the user refreshes the page,
+**Then** the deleted task MUST not appear in the task list.
+
+#### Scenario: No Side Effects
+**Given** the user deletes a task,
+**When** the task list is updated,
+**Then** no other tasks MUST be affected by the deletion.
+
+### Requirement: Delete Task Tests
+The system SHALL have automated tests that verify the delete task logic. Tests SHALL confirm that deleting a task removes only the selected task from the task list and from persisted storage, while all other tasks remain unchanged.
+
+#### Scenario: Delete removes task from storage
+- **GIVEN** multiple tasks exist in LocalStorage
+- **WHEN** a task is deleted by its ID
+- **THEN** the deleted task is no longer present in LocalStorage
+- **AND** the total task count decreases by one
+
+#### Scenario: Delete preserves other tasks
+- **GIVEN** three tasks exist in LocalStorage (Task A, Task B, Task C)
+- **WHEN** Task B is deleted
+- **THEN** Task A remains in LocalStorage with all properties unchanged
+- **AND** Task C remains in LocalStorage with all properties unchanged
+
+#### Scenario: Delete first task preserves remaining tasks
+- **GIVEN** multiple tasks exist in LocalStorage
+- **WHEN** the first task is deleted
+- **THEN** all other tasks remain in LocalStorage with properties unchanged
+
+#### Scenario: Delete last task preserves remaining tasks
+- **GIVEN** multiple tasks exist in LocalStorage
+- **WHEN** the last task is deleted
+- **THEN** all other tasks remain in LocalStorage with properties unchanged
+
+#### Scenario: Delete middle task preserves surrounding tasks
+- **GIVEN** at least three tasks exist in LocalStorage
+- **WHEN** a task in the middle of the list is deleted
+- **THEN** tasks before and after the deleted task remain unchanged
+
+### Requirement: Task Filtering
+The system SHALL allow users to filter tasks based on their completion status.
+
+#### Scenario: Default View
+- **WHEN** the user opens the task list and no filter is applied
+- **THEN** all tasks (open and completed) are displayed
+
+#### Scenario: Filter Open Tasks
+- **WHEN** the user selects the "Open Tasks" filter
+- **THEN** only open tasks are shown
+
+#### Scenario: Filter Completed Tasks
+- **WHEN** the user selects the "Completed Tasks" filter
+- **THEN** only completed tasks are shown
+
+#### Scenario: Persist Filter State
+- **WHEN** the user selects a filter option and refreshes the page
+- **THEN** the previously selected filter is applied
+
+#### Scenario: Filter All Tasks
+- **WHEN** the user selects the "All Tasks" filter
+- **THEN** all tasks (open and completed) are shown

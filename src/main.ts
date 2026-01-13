@@ -330,8 +330,27 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
       meta.className = 'task-meta'
       meta.textContent = `Created ${new Date(task.createdAt).toLocaleString()}`
 
-      item.append(header, desc, meta)
+      // Delete button
+      const deleteBtn = document.createElement('button')
+      deleteBtn.type = 'button'
+      deleteBtn.textContent = 'Delete'
+      deleteBtn.className = 'delete-task'
+      deleteBtn.addEventListener('click', () => {
+        deleteTask(task.id)
+      })
+
+      item.append(header, desc, meta, deleteBtn)
     }
     listEl.appendChild(item)
   })
+}
+
+// Implement Task Deletion Logic
+function deleteTask(id: string) {
+  const index = tasks.findIndex((task) => task.id === id)
+  if (index !== -1) {
+    tasks.splice(index, 1)
+    saveTasks(tasks)
+    render()
+  }
 }
