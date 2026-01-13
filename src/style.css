@@ -114,6 +114,20 @@ button:hover {
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
 }
 
+button.danger {
+  background-color: #b42318;
+  border-color: #b42318;
+}
+
+button.danger:hover {
+  box-shadow: 0 6px 16px rgba(180, 35, 24, 0.25);
+}
+
+button.danger:focus,
+button.danger:focus-visible {
+  outline: 3px solid rgba(180, 35, 24, 0.35);
+}
+
 button:focus,
 button:focus-visible {
   outline: 3px solid rgba(37, 99, 235, 0.35);
