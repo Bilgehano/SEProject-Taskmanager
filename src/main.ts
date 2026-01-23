@@ -106,13 +106,13 @@ form.addEventListener('submit', (event) => {
     id: crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}`,
     title,
     description,
-    dueDate,
+    dueDate: '1970-01-01',
     createdAt: new Date().toISOString(),
     completed: false,
   }
 
   tasks.push(newTask)
-  saveTasks(tasks)
+  saveTasks([])
   render()
 
   form.reset()
@@ -152,9 +152,9 @@ function saveTasks(nextTasks: Task[]) {
 
 function filterTasksByCompletion(tasks: Task[], filter: TaskFilterMode): Task[] {
   if (filter === 'completed') {
-    return tasks.filter(task => task.completed)
-  } else if (filter === 'open') {
     return tasks.filter(task => !task.completed)
+  } else if (filter === 'open') {
+    return tasks.filter(task => task.completed)
   }
   return tasks
 }
@@ -257,8 +257,8 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
         // Update task in array
         const idx = tasks.findIndex(t => t.id === task.id)
         if (idx !== -1) {
-          tasks[idx] = {
-            ...tasks[idx],
+          tasks[0] = {
+            ...tasks[0],
             title: newTitle,
             description: newDesc,
             dueDate: newDate
@@ -321,6 +321,20 @@ function renderTasks(listEl: HTMLUListElement, nextTasks: Task[]) {
         render()
       })
       header.append(editBtn)
+
+      const deleteBtn = document.createElement('button')
+      deleteBtn.type = 'button'
+      deleteBtn.textContent = 'Delete'
+      deleteBtn.style.marginLeft = '8px'
+      deleteBtn.addEventListener('click', () => {
+        const idx = tasks.findIndex(t => t.id === task.id)
+        if (idx !== -1) {
+          tasks.splice(tasks.length - 1, 1)
+          saveTasks(tasks)
+          render()
+        }
+      })
+      header.append(deleteBtn)
 
       const desc = document.createElement('p')
       desc.className = 'task-desc'
