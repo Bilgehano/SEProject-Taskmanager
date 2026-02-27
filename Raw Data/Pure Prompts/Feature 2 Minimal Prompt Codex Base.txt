@@ -1,0 +1,182 @@
+User: Follow instructions in [openspec-proposal.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-proposal.prompt.md).
+When implementing this feature, all architectural rules and constraints defined in project.md apply without exception.
+
+Add the ability to edit existing tasks.
+This feature must only modify existing task data (title, description, due date) and must not create new tasks or rebuild the UI.
+
+Editing is allowed only for already existing tasks and must reuse the current task data model without adding or changing fields.
+Data must remain persisted in LocalStorage.
+
+Validation rules:
+- Title and due date must remain required when editing.
+- If validation fails, the task must not be saved and a clear error message must be shown at the same UI location used in the previous feature.
+
+Output requirements:
+- Keep proposal and task descriptions short and structured.
+- Avoid narrative explanations or unnecessary commentary.
+
+Scope constraints:
+- Do not refactor existing components.
+- Do not introduce new features beyond editing existing tasks.
+- Do not modify unrelated UI or logic.
+
+GitHub Copilot: Enable Claude Opus 4.5 (Preview) for all clients
+[object Object]
+
+User: @agent Enable: "Enable Claude Opus 4.5 (Preview) for all clients"
+
+GitHub Copilot: Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/project.md)
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/AGENTS.md#1-1), lines 1 to 200
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/specs/tasks/spec.md)
+
+Now let me examine the existing implementation to understand the current task data model and UI: 
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts)
+
+Searched for regex `interface Task|type Task`, 1 result
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src)
+
+Now let me check the archived change for reference patterns: 
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/archive/2025-12-07-add-task-creation/proposal.md)
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/archive/2025-12-07-add-task-creation/tasks.md)
+
+Now I have all the context needed. Let me create the proposal for the edit task feature: 
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/edit-existing-tasks/proposal.md)
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/edit-existing-tasks/tasks.md)
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/edit-existing-tasks/specs/tasks/spec.md)
+
+Now let me run validation: 
+
+Ran terminal command: openspec validate edit-existing-tasks --strict
+
+The proposal is valid. Here's the summary:
+
+---
+
+**Proposal created:** `edit-existing-tasks`
+
+**Files:**
+- proposal.md
+- tasks.md
+- specs/tasks/spec.md
+
+**Scope:**
+- Adds Edit button to task items
+- Populates existing form with task data for editing
+- Updates task in place (no new task created)
+- Validates title and due date; shows error in existing UI location
+- Persists changes to LocalStorage
+- Cancel button to discard edit
+
+**Validation:** ✅ Passed `openspec validate edit-existing-tasks --strict`
+
+Awaiting approval before implementation.
+
+Made changes.
+
+User: Follow instructions in [openspec-apply.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-apply.prompt.md).
+edit-existing-tasks
+
+GitHub Copilot: Created 8 todos
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/edit-existing-tasks/proposal.md)
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/edit-existing-tasks/tasks.md)
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts#1-1), lines 1 to 150
+
+Starting: *Add Edit button to task items* (2/8)
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts#145-145), lines 145 to 157
+
+Now I'll implement all the required changes to main.ts: 
+
+Using "Multi-Replace String in Files"
+
+
+```
+
+```
+
+
+Checked [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts), 8 problems found
+
+The helper functions are hoisted above the null check. I need to move them after the check or add guards. Let me read the current structure and fix: 
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts#100-100), lines 100 to 130
+
+I need to add null guards to the helper functions since TypeScript can't infer the earlier null check applies: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Checked [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts), no problems found
+
+Starting: *Mark tasks.md complete* (7/8)
+
+Now let me update the tasks.md to mark all implementation tasks complete: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Starting: *Run validation* (8/8)
+
+Ran terminal command: openspec validate edit-existing-tasks --strict
+
+Now let me mark the validation items complete and update the final tasks.md: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Completed: *Run validation* (8/8)
+
+Implementation complete.
+
+**Summary:**
+- Added Edit button to each task item
+- Clicking Edit populates the form with task data and changes submit button to "Save Changes"
+- Cancel button appears during edit mode to discard changes
+- Form submit updates existing task (by ID) instead of creating new
+- Validation enforces title and due date; error shown in existing error element
+- Changes persisted to LocalStorage
+
+**Validation:** ✅ `openspec validate edit-existing-tasks --strict` passed
+
+Made changes.
+
+User: Follow instructions in [openspec-archive.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-archive.prompt.md).
+
+GitHub Copilot: Ran terminal command: openspec list
+
+Ran terminal command: openspec archive edit-existing-tasks --yes
+
+Ran terminal command: openspec validate --strict
+
+Archived successfully.
+
+- Change `edit-existing-tasks` → `2025-12-16-edit-existing-tasks`
+- Spec `tasks` updated with 1 added requirement
+- Validation: ✅ passed

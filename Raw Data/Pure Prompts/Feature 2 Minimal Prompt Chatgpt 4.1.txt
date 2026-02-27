@@ -1,0 +1,72 @@
+User: Follow instructions in [openspec-proposal.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-proposal.prompt.md).
+Add the ability to edit tasks. Users should be able to change the title,
+description and due date of a task. Store changes in LocalStorage.
+Keep changes minimal and avoid touching unrelated code.
+
+GitHub Copilot: Created 5 todos
+
+Searched codebase for "task editing|edit task|update task|LocalStorage|task model|task spec", 21 results
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/add-task-editing/specs/tasks)
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/add-task-editing/proposal.md)
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/add-task-editing/tasks.md)
+
+Created [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/openspec/changes/add-task-editing/specs/tasks/spec.md)
+
+Ran terminal command: openspec validate add-task-editing --strict
+
+Completed: *Review current specs and project for task editing* (1/5)
+
+The OpenSpec proposal to add task editing is complete and validated:
+
+- Users will be able to edit the title, description, and due date of a task.
+- Edits will be persisted to LocalStorage, updating the correct task in-place.
+- Required field validation will apply to edits.
+- The proposal, tasks, and spec delta are scaffolded under openspec/changes/add-task-editing/.
+- No code has been written yet; this is a design/proposal stage only.
+
+Let me know if you want to review or approve the proposal, or proceed to implementation.
+
+Made changes.
+
+User: Follow instructions in [openspec-apply.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-apply.prompt.md).
+add-task-editing
+
+GitHub Copilot: Created 5 todos
+
+Read [](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/src/main.ts)
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Starting: *Allow users to cancel editing and restore read-only view* (2/5)
+
+Starting: *Manually test editing, cancelling, and persistence* (5/5)
+
+Task editing is now implemented:
+
+- Each task has an Edit button that toggles an inline form with pre-filled values.
+- Users can save or cancel edits; required field validation is enforced.
+- Edits update the in-memory list and LocalStorage, preserving `id` and `createdAt`.
+- Cancelling restores the read-only view.
+
+You can now test editing, cancelling, and persistence in the UI. Let me know if you need further changes or want to mark this change as complete.
+
+Made changes.
+
+User: Follow instructions in [openspec-archive.prompt.md](file:///c%3A/Users/Bilgehan/OneDrive/%C3%96nemli/Vorlesungen/SE-Project/Try/SEProject-Taskmanager/.github/prompts/openspec-archive.prompt.md).
+
+GitHub Copilot: Ran terminal command: openspec archive add-task-editing --yes
+
+Ran terminal command: openspec validate --strict
+
+The add-task-editing change has been archived and all specs validate successfully. The project is now up to date with the edit task capability fully integrated and documented.
+
+If you need to review, deploy, or start a new change, let me know!

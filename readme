@@ -1,0 +1,84 @@
+# SE-Project Task Manager – OpenSpec Analyse (Repo Guide)
+
+Dieses Repository enthält die komplette Projektumgebung und die Rohdaten zur Analyse eines spec-driven Workflows mit OpenSpec (Proposal → Tasks → Apply → Archive).  
+Ziel: Runs reproduzierbar machen, Token-/Workflow-Verhalten nachvollziehbar dokumentieren und die Ergebnisse für die schriftliche Ausarbeitung prüfbar ablegen.
+
+---
+
+## 1) Was finde ich wo?
+
+### Anwendung 
+- Der eigentliche Task-Manager (Frontend/Web-App) liegt im Projekt-Root
+
+
+### Rohdaten (Prompts, Logs, Token)
+In diesem Repo gibt es zusätzlich einen Ordner mit „Raw Data“, um die Runs später exakt nachzuvollziehen:
+  - `PurePrompts/`  
+    Hier liegen die **1:1 kopierten Prompt-Textdateien** (ohne nachträgliche Bearbeitung).
+> Hinweis: Die Raw-Data-Ordner sind absichtlich „dumm“ gehalten: Es sind Dateien zum Nachschlagen und Zitieren, nicht zum Ausführen.
+
+---
+
+## 2) Branches: Wie lese ich die Experimente?
+
+Die Experimente wurden nach dem Prinzip geführt:
+- `main`/`master` = stabile Baseline
+- jede Variation (Feature/Modell/Promptvariante/Testumfang) = eigener Branch
+
+**Branch-Schema (Beispiele):**
+- `feature1-*-minimal-*`  
+- `feature2-*-complex-*` / `feature2-*-minimal-*`
+- `feature3a-*-testing-minimal-*`
+- `feature3b-*-testing-medium-*`
+- `feature3c-*-testing-complex-*`
+- `feature4-*-filter-*`
+- `feature5-*-best-case-*` / `feature5-*-worst-case-*`
+
+Praktisch bedeutet das:
+- Du kannst zwischen Branches wechseln und direkt vergleichen:
+  - Code-Diffs
+  - OpenSpec-Change-Artefakte
+  - Token-/Log-Rohdaten
+
+---
+
+## 4) Reproduzierbarkeit (minimal)
+
+Voraussetzungen:
+- Node.js + npm installiert
+- Dependencies installieren: `npm install`
+
+Optional:
+- OpenSpec CLI vorhanden (je nach Setup global oder via npx).
+
+Danach:
+- App starten (Dev): `npm run dev`
+- Tests (falls vorhanden): `npm run test`
+
+OpenSpec-Validierung (wenn relevant):
+- `openspec validate --all --strict` 
+
+---
+
+## 5) Was gehört zur „schriftlichen Ausarbeitung“ und was ist hier im Repo?
+
+**In der schriftlichen Ausarbeitung** stehen:
+- Interpretation der Runs (Token, Scope-Treue, Stabilität, Prompt-Refinement)
+- Ergebnis-/Fazittexte
+
+**Im Repository** liegt der Nachweis:
+- versionierte Branches + Commits
+- OpenSpec-Artefakte (Proposal/Tasks/Deltas/Archive)
+- Raw Data (Prompttexte/Logs/Tokenwerte)
+
+---
+
+## 6) Tag für Abgabe
+
+Für die finale Abgabe wurde folgender Tag vorgesehen:
+- `submission-2026-02-28`
+
+Damit kann exakt dieser Stand jederzeit wiederhergestellt werden:
+- `git checkout submission-2026-02-28`
+
+---

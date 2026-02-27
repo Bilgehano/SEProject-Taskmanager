@@ -1,0 +1,131 @@
+User: Follow instructions in [openspec-proposal.prompt.md](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/.github/prompts/openspec-proposal.prompt.md).
+Add automated tests for Feature 4 to check that open tasks and completed tasks are shown correctly when the filter changes. Tests should also verify that toggling a task’s completion updates what is displayed and that basic task functionality still works. The tests must be automated, use the existing setup only, and not change application code.
+
+GitHub Copilot: Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/project.md)
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/AGENTS.md#1-1), lines 1 to 200
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/specs/filter-tasks/spec.md)
+
+Let me also check the existing code and package.json to understand the testing setup: 
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/package.json)
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/src/taskFilter.ts)
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/src/main.ts#1-1), lines 1 to 200
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager)
+
+Let me check if there are any existing tests and get the rest of main.ts: 
+
+Searched for files matching `**/*.test.ts`, no matches
+
+Searched for files matching `**/*.spec.ts`, no matches
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/src/main.ts#200-200), lines 200 to 338
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/specs/tasks/spec.md)
+
+Now I have a clear picture. Let me check existing changes to ensure no conflicts: 
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes)
+
+Searched for text `vitest`, 20 results
+
+I have all the context I need. Let me now create the proposal for adding automated tests for Feature 4 (task filtering). The project already has Vitest installed, so I'll use the existing test setup. 
+
+Created [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/proposal.md)
+
+Created [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/tasks.md)
+
+Created [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/specs/filter-tasks/spec.md)
+
+Created [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/specs/tasks/spec.md)
+
+Now let me validate the proposal using the openspec CLI: 
+
+Ran terminal command: npx openspec validate add-filter-tests --strict
+
+The proposal has been validated successfully. Here's a summary of the change proposal I created:
+
+## Proposal: Add Automated Tests for Task Filtering
+
+### Created Files:
+- proposal.md - Describes the change and its impact
+- tasks.md - Implementation checklist with 14 verification items
+- specs/filter-tasks/spec.md - Test requirements for filter behavior
+- specs/tasks/spec.md - Test requirements for basic task functionality
+
+### Test Coverage:
+1. **Unit tests for `filterTasksByCompletion`** - Verifies open, completed, and all filter modes
+2. **Toggle completion tests** - Confirms toggling updates visibility per filter
+3. **Basic task functionality tests** - Ensures new tasks appear correctly in each filter mode
+4. **Edge cases** - Empty arrays, mixed task states
+
+### Key Points:
+- Uses **Vitest** (already installed in the project)
+- **No application code changes** - tests only
+- Covers all scenarios from the `filter-tasks` spec
+
+The proposal is ready for review and approval before implementation.
+
+Made changes.
+
+User: Follow instructions in [openspec-apply.prompt.md](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/.github/prompts/openspec-apply.prompt.md).
+add-filter-test
+
+GitHub Copilot: Created 7 todos
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/proposal.md)
+
+Read [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/openspec/changes/add-filter-tests/tasks.md)
+
+Starting: *Create test file* (2/7)
+
+Now let me create the test file with all the required tests: 
+
+Created [](file:///c%3A/Users/Bilgehan/Desktop/SEProject-Taskmanager/src/taskFilter.test.ts)
+
+Starting: *Run and validate tests* (6/7)
+
+Ran terminal command: npm run test
+
+All 14 tests pass. Now let me update the tasks.md checklist: 
+
+Starting: *Update tasks.md checklist* (7/7)
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Completed: *Update tasks.md checklist* (7/7)
+
+Implementation complete. Here's a summary:
+
+## Completed: add-filter-tests
+
+**Created:** taskFilter.test.ts with 14 passing tests
+
+### Test Coverage:
+| Category | Tests |
+|----------|-------|
+| **Open filter** | Returns only open tasks, handles no open tasks |
+| **Completed filter** | Returns only completed tasks, handles no completed tasks |
+| **All filter** | Returns all tasks regardless of status |
+| **Edge cases** | Empty arrays, mixed task states |
+| **Toggle completion** | Open→completed visibility, completed→open visibility, all filter unaffected |
+| **Basic task functionality** | New tasks in open/all/completed filters, multiple task additions |
+
+### Results:
+```
+✓ 14 tests passed (0 failures)
+✓ No application code modified
+✓ All tasks.md items marked complete
+```
+
+Made changes.
